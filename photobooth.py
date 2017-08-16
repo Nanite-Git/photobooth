@@ -49,7 +49,6 @@ class Background(pygame.sprite.Sprite):
 def textDropShadow(font, message, offset, fontcolor, shadowcolor):
     base = font.render(message, 0, fontcolor)
     size = base.get_width() + offset, base.get_height() + offset
-    #img = pygame.Surface(size, 16)
     img = pygame.Surface(size, pygame.SRCALPHA,32)
     img = img.convert_alpha()
 
