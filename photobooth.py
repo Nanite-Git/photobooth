@@ -299,6 +299,8 @@ def next_color():
     if leds[2]:
         leds[2] = False
         leds[0] = True
+    
+    set_gpio_output()
 
 def flash(status=True):
     global leds
@@ -306,6 +308,8 @@ def flash(status=True):
         leds = (True,True, True)
     else:
         leds = (False, False, False)
+    
+    set_gpio_output()
 
 def set_gpio_output():
     GPIO.output(led_red, leds[0])
