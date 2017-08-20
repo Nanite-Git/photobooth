@@ -288,18 +288,26 @@ def start_screen():
     screen.blit(t, (int((dispx/2)-(t.get_size()[0]/2)), int((dispy/2)-(t.get_size()[1])+75)))
     pygame.display.update()
 
+cw = 0
 def next_color():
-    global leds
-    if leds[0]:
-        leds[0] = False
-        leds[1] = True
-    if leds[1]:
-        leds[1] = False
-        leds[2] = True
-    if leds[2]:
-        leds[2] = False
-        leds[0] = True
+    global leds, cw
+    if cw == 0:
+        leds= ( True, False, False)
+    elif cw == 1:
+        leds= ( True, True, False)
+    elif cw == 2:
+        leds= ( False, True, False)
+    elif cw == 3:
+        leds= ( False, True, True)
+    elif cw == 4:
+        leds= ( False, False, True)
+    else:
+        leds= ( True, False, True)
     
+    cw = cw + 1
+    if cw > 5:
+        cw=0
+
     set_gpio_output()
 
 def flash(status=True):
@@ -312,11 +320,12 @@ def flash(status=True):
     set_gpio_output()
 
 def set_gpio_output():
+    #print "Out " + str(leds[0]) + " " + str(leds[1]) + " " + str(leds[2])
     GPIO.output(led_red, leds[0])
     GPIO.output(led_green, leds[1])
     GPIO.output(led_blue, leds[2])
 
-GPIO.add_event_detect(button, GPIO.RISING, callback=my_gpio_callback)
+GPIO.add_event_detect(button, GPIO.RISING, callback=my_gpio_callback, bouncetime=200)
 
 start_screen()
 counter = 0
@@ -337,12 +346,13 @@ while 1:
         GPIO.cleanup()
         break
 
+
     pygame.time.wait(100)
-    counter =+ 1
+    counter = counter + 1
 
     if counter >= 10:
-        counter = 0
         next_color()
+        counter = 0
 
 
 
