@@ -186,7 +186,6 @@ def takePhotoSerie():
     
     thank_you()
 
-
     if print_enabled:
         # Start printing
         # build hook call list

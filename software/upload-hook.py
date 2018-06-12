@@ -10,7 +10,7 @@ from subprocess import call
 todays_dir = time.strftime("%Y-%m-%d")
 pic_name = time.strftime("%Y-%m-%d %H-%M-%S.jpg")
 
-output_file = "~/photo-ouput/" + todays_dir + "/" + pic_name +  ".jpg"
+output_file = "./photo-ouput/" + todays_dir + "/" + pic_name +  ".jpg"
 
 np = len(sys.argv) -1
 
