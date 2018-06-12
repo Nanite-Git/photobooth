@@ -11,11 +11,12 @@ import os.path
 import sys, getopt
 import subprocess
 import RPi.GPIO as GPIO
+import serial
 
 GPIO.setmode(GPIO.BCM)     # set up BCM GPIO numbering
 
-button = 4
-led_button = 5
+button = 19
+led_button = 20
 
 led_red = 17
 led_green = 6
@@ -23,9 +24,6 @@ led_blue = 27
 
 GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)    # set GPIO 25 as input
 GPIO.setup(led_button, GPIO.OUT)
-GPIO.setup(led_red, GPIO.OUT)
-GPIO.setup(led_green, GPIO.OUT)
-GPIO.setup(led_blue, GPIO.OUT)
 
 directory = 'output' 
 number_of_picture = 4
@@ -34,6 +32,9 @@ shadowcolor = (30,30,30)
 font = 'Droid Sans Mono'
 
 usb_mount = "/media/usb0/"
+
+ser = serial.Serial('/dev/ttyACM0', 115200)
+ser.write("i\r\n")
 
 ###################################################################
 
@@ -143,7 +144,8 @@ print dispx, dispy
 screen = pygame.display.set_mode((dispx,dispy), pygame.FULLSCREEN)
 #BackGround = Background('gray-slate-background.jpg', [0,0])
 #BackGround = Background('background1.jpg', [0,0])
-BackGround = Background('background2.png', [0,0])
+#BackGround = Background('background2.png', [0,0])
+BackGround = Background('background-race.jpg', [0,0])
 
 screen.fill([255, 255, 255])
 screen.blit(BackGround.image, BackGround.rect)
@@ -158,7 +160,8 @@ time.sleep(1)
 
 
 camera = picamera.PiCamera()
-camera.vflip = True
+camera.vflip = False
+camera.hflip = True
 
 pictures = []
 pic_preview_width = 10;
@@ -220,6 +223,7 @@ def takePicture(filename, file_number, wait_time = 10):
     
     camera.resolution = (640,480)
     camera.start_preview(fullscreen=False, window=(200,200,640,480))
+    camera.vflip = False
 
     for i in range(wait_time):
         atime = pygame.time.get_ticks()
@@ -228,7 +232,8 @@ def takePicture(filename, file_number, wait_time = 10):
         
         if file_number > 0:
             showPictures()
-
+        
+        ser.write("c"+str(9-i)+"\r\n")
         c = textDropShadow(bigfont, str(10-i), 20, textcolor, shadowcolor)
         screen.blit(c, (textx-(c.get_size()[0]/2), texty))
         
@@ -246,9 +251,8 @@ def takePicture(filename, file_number, wait_time = 10):
             
     camera.stop_preview()
     camera.resolution = (3280,2464)
-    flash(True)
+    ser.write("f\r\n");
     camera.capture(getFilename(filename, file_number))
-    flash(False)
     screen.fill([255, 255, 255])
     screen.blit(BackGround.image, BackGround.rect)
     if file_number > 0:
@@ -265,6 +269,7 @@ def takePicture(filename, file_number, wait_time = 10):
     photo_width = int(photo_width)
     pic_preview_width = photo_width
     img = pygame.transform.scale(img, (photo_width, photo_height))
+    ser.write("iii\r\n");
     return(img)
     
 
@@ -289,41 +294,7 @@ def start_screen():
     pygame.display.update()
 
 cw = 0
-def next_color():
-    global leds, cw
-    if cw == 0:
-        leds= ( True, False, False)
-    elif cw == 1:
-        leds= ( True, True, False)
-    elif cw == 2:
-        leds= ( False, True, False)
-    elif cw == 3:
-        leds= ( False, True, True)
-    elif cw == 4:
-        leds= ( False, False, True)
-    else:
-        leds= ( True, False, True)
-    
-    cw = cw + 1
-    if cw > 5:
-        cw=0
 
-    set_gpio_output()
-
-def flash(status=True):
-    global leds
-    if status:
-        leds = (True,True, True)
-    else:
-        leds = (False, False, False)
-    
-    set_gpio_output()
-
-def set_gpio_output():
-    #print "Out " + str(leds[0]) + " " + str(leds[1]) + " " + str(leds[2])
-    GPIO.output(led_red, leds[0])
-    GPIO.output(led_green, leds[1])
-    GPIO.output(led_blue, leds[2])
 
 GPIO.add_event_detect(button, GPIO.RISING, callback=my_gpio_callback, bouncetime=200)
 
@@ -331,6 +302,8 @@ start_screen()
 counter = 0
 
 check_usb()
+
+idle_time = datetime.datetime.now()
 
 while 1:
     event = pygame.event.poll()
@@ -340,20 +313,14 @@ while 1:
         start_screen()
         pygame.event.clear()
         button_pressed = False
+        idle_time = datetime.datetime.now()
     
     if event.type is pygame.KEYDOWN and ((event.key == pygame.K_ESCAPE)):
         pygame.quit()
         GPIO.cleanup()
         break
 
-
     pygame.time.wait(100)
-    counter = counter + 1
-
-    if counter >= 10:
-        next_color()
-        counter = 0
-
 
 
 
