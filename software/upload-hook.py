@@ -16,63 +16,69 @@ import owncloud
 from subprocess import call
 
 todays_dir = time.strftime("%Y-%m-%d")
-pic_name = time.strftime("%Y-%m-%d %H-%M-%S.jpg")
+pic_name = time.strftime("%Y-%m-%d_%H-%M-%S.jpg")
 
-output_file = "./photo-ouput/" + todays_dir + "/" + pic_name +  ".jpg"
-tmp_file = "/dev/shm/" + todays_dir + "/" + pic_name +  ".jpg"
+output_file = "./photo-ouput/" + todays_dir + "/" + pic_name 
+tmp_file = "/dev/shm/" + pic_name
 
 np = len(sys.argv) -1
 
 
-def get_download_link():
-    oc = owncloud.Client(server)
-	oc.login(username, password)
-	upload_dir = time.strftime("%Y-%m-%d")
-        try:
-	        oc.mkdir(upload_dir)
-        except owncloud.HTTPResponseError:
-            print "upload_dir already exists"
+upload_dir = time.strftime("%Y-%m-%d")
 
-	share_link = None
-	if oc.is_shared(upload_dir):
-		shares = oc.get_shares(upload_dir)
+def get_download_link():
+    global upload_dir
+    oc = owncloud.Client(server)
+    oc.login(username, password)
+    try:
+        oc.mkdir(upload_dir)
+    except owncloud.HTTPResponseError:
+       print "upload_dir already exists"
+
+    share_link = None
+    if oc.is_shared(upload_dir):
+        shares = oc.get_shares(upload_dir)
 		
-		for share in shares:
-			link = share.get_link()
-			if link is not None:
-				share_link = link
+    for share in shares:
+        link = share.get_link()
+        if link is not None:
+            share_link = link
 
 	
-	if share_link is None:
-		link_info = oc.share_file_with_link(upload_dir, password="photobox")
-		share_link = link_info.get_link()
+    if share_link is None:
+        link_info = oc.share_file_with_link(upload_dir, password="photobox")
+        share_link = link_info.get_link()
 		
-	qr = qrcode.QRCode(
-		version=1,
-		error_correction=qrcode.constants.ERROR_CORRECT_L,
-		box_size=10,
-		border=4,
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+	border=4,
 	)
 	
-	qr.add_data(share_link)
-	qr.make(fit=True)
+    qr.add_data(share_link)
+    qr.make(fit=True)
 
-	img = qr.make_image(fill_color="black", back_color="white")
-	image_file = open("/dev/shm/qr.png",'w+')
-	img.save(image_file,"PNG")
-	image_file.close() 
+    img = qr.make_image(fill_color="black", back_color="white")
+    image_file = open("/dev/shm/qr.png",'w+')
+    img.save(image_file,"PNG")
+    image_file.close() 
+    return oc
 
 def upload_file(filename):
-    get_download_link()
-	try:
-	    oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
-		return True
-	except owncloud.HTTPResponseError:
+    global upload_dir
+    oc = get_download_link()
+    try:
+        oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
+    except owncloud.HTTPResponseError:
+        print 'ERROR: Cannot Upload File'
         return False	
+    
+    return True
 
 if np == 0:
     print 'Setup upload hook for today'
-	get_download_link()
+    get_download_link()
 	
 
 if np < 1:
@@ -82,8 +88,6 @@ if np < 1:
 
 if np == 4:
 
-    if not os.path.exists(os.path.dirname(output_file)):
-        os.makedirs(os.path.dirname(output_file))
     #print sys.argv
 
     #call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1824x1232+20+20", "tile_4.jpg"])
@@ -91,11 +95,13 @@ if np == 4:
     call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", tmp_file])
     #print "Finished"
 
-    if upload_file(output_file):
-	    os.remove(sys.argv[1])
-		os.remove(sys.argv[2])
-		os.remove(sys.argv[3])
-		os.remove(sys.argv[4])
-		os.remove(tmp_file)
-	else:
-	    os.rename(tmp_file, output_file)
+    if upload_file(tmp_file):
+        os.remove(sys.argv[1])
+        os.remove(sys.argv[2])
+        os.remove(sys.argv[3])
+        os.remove(sys.argv[4])
+        os.remove(tmp_file)
+    else:
+        if not os.path.exists(os.path.dirname(output_file)):
+            os.makedirs(os.path.dirname(output_file))
+        os.rename(tmp_file, output_file)

@@ -256,7 +256,6 @@ def takePicture(filename, file_number, wait_time = 10):
         if file_number > 0:
             showPictures()
         
-        ser.write("c"+str(9-i)+"\r\n")
         c = textDropShadow(bigfont, str(10-i), 20, textcolor, shadowcolor)
         screen.blit(c, (textx-(c.get_size()[0]/2), texty))
         
@@ -265,9 +264,10 @@ def takePicture(filename, file_number, wait_time = 10):
             gr_rect = gr.get_size()
             screen.blit(gr, (int((dispx/2)-(gr_rect[0]/2)), 800))
 
+        ser.write("c"+str(9-i)+"\r\n")
         pygame.display.update()
         btime = pygame.time.get_ticks()
-        waittime = 1000-(btime-atime)
+        waittime = 900-(btime-atime)
         if waittime <= 0:
             waittime = 1
         pygame.time.wait(waittime)
@@ -330,6 +330,7 @@ cw = 0
 
 start_screen()
 time.sleep(5)
+start_time = time.time()
 GPIO.add_event_detect(button, GPIO.BOTH, callback=my_gpio_callback, bouncetime=200)
 
 
@@ -360,7 +361,7 @@ while 1:
         GPIO.cleanup()
         break
 
-    pygame.time.wait(100)
+    pygame.time.wait(25)
 
 
 
