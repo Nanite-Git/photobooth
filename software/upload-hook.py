@@ -23,8 +23,8 @@ output_file = "./photo-ouput/" + todays_dir + "/" + pic_name +  ".jpg"
 np = len(sys.argv) -1
 
 
-def upload_file(filename):
-	oc = owncloud.Client(server)
+def get_download_link():
+    oc = owncloud.Client(server)
 	oc.login(username, password)
 	upload_dir = time.strftime("%Y-%m-%d")
         try:
@@ -60,9 +60,15 @@ def upload_file(filename):
 	image_file = open("/dev/shm/qr.png",'w+')
 	img.save(image_file,"PNG")
 	image_file.close() 
-	
+
+def upload_file(filename):
+    get_download_link()
 	oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
 	
+
+if np == 0:
+    print 'Setup upload hook for today'
+	get_download_link()
 	
 
 if np < 1:

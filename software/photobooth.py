@@ -339,6 +339,11 @@ check_usb()
 
 idle_time = datetime.datetime.now()
 
+# init hook, so that the script can setup everything
+hook = []
+hook.append(str(printhook))
+subprocess.Popen(hook)
+
 while 1:
     event = pygame.event.poll()
     GPIO.output(led_button, True)
