@@ -8,7 +8,7 @@ from nextcloud_account import server, username, password
 
 # pip install qrcode[pil]
 import qrcode
-from qrcode.image.pure import PymagingImage
+#from qrcode.image.pure import PymagingImage
 
 # pip install pyocclient
 import owncloud
@@ -27,11 +27,14 @@ def upload_file(filename):
 	oc = owncloud.Client(server)
 	oc.login(username, password)
 	upload_dir = time.strftime("%Y-%m-%d")
-	oc.mkdir(upload_dir)
-	
+        try:
+	    oc.mkdir(upload_dir)
+        except owncloud.HTTPResponseError:
+            print "upload_dir already exists"
+
 	share_link = None
 	if oc.is_shared(upload_dir):
-		shares = get_shares(upload_dir)
+		shares = oc.get_shares(upload_dir)
 		
 		for share in shares:
 			link = share.get_link()
@@ -39,8 +42,8 @@ def upload_file(filename):
 				share_link = link
 
 	
-	if link is None:
-		link_info = oc.share_file_with_link(upload_dir)
+	if share_link is None:
+		link_info = oc.share_file_with_link(upload_dir, password="photobox")
 		share_link = link_info.get_link()
 		
 	qr = qrcode.QRCode(
@@ -78,4 +81,4 @@ if np == 4:
     call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", output_file])
     #print "Finished"
 
-	upload_file(output_file)
+    upload_file(output_file)

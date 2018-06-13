@@ -159,6 +159,7 @@ pygame.display.update()
 
 bigfont = pygame.font.SysFont(font, 300)
 smallfont = pygame.font.SysFont(font, 120)
+tinyfont = pygame.font.SysFont(font, 60)
 pygame.mouse.set_visible(0)
 
 pygame.display.update()
@@ -181,10 +182,10 @@ def my_gpio_callback(channel):
 	
     level = GPIO.input(channel)
 	
-    if level:
+    if not level:
         start_time = time.time()
     else:
-	    if (time.time() - start_time) >= 10:
+	if (time.time() - start_time) >= 10:
 	       shutdown()
         else:
            button_pressed = True
@@ -315,7 +316,9 @@ def start_screen():
 	
     try:
         img = pygame.image.load('/dev/shm/qr.png')
-        screen.blit(img,(0,0))
+        screen.blit(img,(80,dispy-(80+370)))
+        t = textDropShadow(tinyfont, 'Password: photobox', 10, textcolor, shadowcolor)
+        screen.blit(t, (80, int(dispy-75)))
     except pygame.error, message:
          print 'Cannot load image.'	
 		
@@ -324,7 +327,8 @@ def start_screen():
 
 cw = 0
 
-
+start_screen()
+time.sleep(5)
 GPIO.add_event_detect(button, GPIO.BOTH, callback=my_gpio_callback, bouncetime=200)
 
 
