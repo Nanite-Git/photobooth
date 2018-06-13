@@ -13,6 +13,9 @@ import subprocess
 import RPi.GPIO as GPIO
 import serial
 
+
+
+
 GPIO.setmode(GPIO.BCM)     # set up BCM GPIO numbering
 
 button = 19
@@ -25,9 +28,12 @@ led_blue = 27
 GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)    # set GPIO 25 as input
 GPIO.setup(led_button, GPIO.OUT)
 
+start_time = time.time()
+
 directory = 'output' 
 number_of_picture = 4
-textcolor = (120,120,250)
+#textcolor = (120,120,250)
+textcolor = (183,65,14)
 shadowcolor = (30,30,30)
 font = 'Droid Sans Mono'
 
@@ -171,7 +177,20 @@ button_pressed = False;
 
 def my_gpio_callback(channel):
     global button_pressed
-    button_pressed = True
+	global start_time
+	
+	if (time.time() - start_time) >= 10:
+		shutdown()
+	else:
+		button_pressed = True
+	
+def my_falling_gpio_callback(channel):
+    global start_time
+    start_time = time.time()
+
+def shutdown():
+	subprocess.call("sudo shutdown -h now", shell=True)
+	
 
 def getFilename(prefix, number):
     return str(directory) + '/' + str(prefix) + '_' + str(number) + '.jpg'
@@ -290,12 +309,21 @@ def start_screen():
     screen.blit(t, (int((dispx/2)-(t.get_size()[0]/2)), int((dispy/2)-(t.get_size()[1])-75)))
     t = textDropShadow(smallfont, 'to start', 10, textcolor, shadowcolor)
     screen.blit(t, (int((dispx/2)-(t.get_size()[0]/2)), int((dispy/2)-(t.get_size()[1])+75)))
+	
+	try:
+		img = pygame.image.load('/dev/shm/qr.png')
+		screen.blit(img,(0,0))
+	except pygame.error, message:
+        print 'Cannot load image.'	
+		
+	
     pygame.display.update()
 
 cw = 0
 
 
 GPIO.add_event_detect(button, GPIO.RISING, callback=my_gpio_callback, bouncetime=200)
+GPIO.add_event_detect(button, GPIO.FALLING, callback=my_falling_gpio_callback, bouncetime=200)
 
 start_screen()
 counter = 0
