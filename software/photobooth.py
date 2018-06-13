@@ -177,19 +177,19 @@ button_pressed = False;
 
 def my_gpio_callback(channel):
     global button_pressed
-	global start_time
+    global start_time
 	
-	if (time.time() - start_time) >= 10:
-		shutdown()
-	else:
-		button_pressed = True
+    if (time.time() - start_time) >= 10:
+	    shutdown()
+    else:
+        button_pressed = True
 	
 def my_falling_gpio_callback(channel):
     global start_time
     start_time = time.time()
 
 def shutdown():
-	subprocess.call("sudo shutdown -h now", shell=True)
+    subprocess.call("sudo shutdown -h now", shell=True)
 	
 
 def getFilename(prefix, number):
@@ -310,11 +310,11 @@ def start_screen():
     t = textDropShadow(smallfont, 'to start', 10, textcolor, shadowcolor)
     screen.blit(t, (int((dispx/2)-(t.get_size()[0]/2)), int((dispy/2)-(t.get_size()[1])+75)))
 	
-	try:
-		img = pygame.image.load('/dev/shm/qr.png')
-		screen.blit(img,(0,0))
-	except pygame.error, message:
-        print 'Cannot load image.'	
+    try:
+        img = pygame.image.load('/dev/shm/qr.png')
+        screen.blit(img,(0,0))
+    except pygame.error, message:
+         print 'Cannot load image.'	
 		
 	
     pygame.display.update()
