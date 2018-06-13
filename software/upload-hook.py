@@ -19,6 +19,7 @@ todays_dir = time.strftime("%Y-%m-%d")
 pic_name = time.strftime("%Y-%m-%d %H-%M-%S.jpg")
 
 output_file = "./photo-ouput/" + todays_dir + "/" + pic_name +  ".jpg"
+tmp_file = "/dev/shm/" + todays_dir + "/" + pic_name +  ".jpg"
 
 np = len(sys.argv) -1
 
@@ -28,7 +29,7 @@ def get_download_link():
 	oc.login(username, password)
 	upload_dir = time.strftime("%Y-%m-%d")
         try:
-	    oc.mkdir(upload_dir)
+	        oc.mkdir(upload_dir)
         except owncloud.HTTPResponseError:
             print "upload_dir already exists"
 
@@ -63,8 +64,11 @@ def get_download_link():
 
 def upload_file(filename):
     get_download_link()
-	oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
-	
+	try:
+	    oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
+		return True
+	except owncloud.HTTPResponseError:
+        return False	
 
 if np == 0:
     print 'Setup upload hook for today'
@@ -84,7 +88,14 @@ if np == 4:
 
     #call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1824x1232+20+20", "tile_4.jpg"])
     #call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", "tile_4.jpg"])
-    call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", output_file])
+    call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", tmp_file])
     #print "Finished"
 
-    upload_file(output_file)
+    if upload_file(output_file):
+	    os.remove(sys.argv[1])
+		os.remove(sys.argv[2])
+		os.remove(sys.argv[3])
+		os.remove(sys.argv[4])
+		os.remove(tmp_file)
+	else:
+	    os.rename(tmp_file, output_file)

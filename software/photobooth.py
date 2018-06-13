@@ -30,7 +30,8 @@ GPIO.setup(led_button, GPIO.OUT)
 
 start_time = time.time()
 
-directory = 'output' 
+#directory = 'output' 
+directory = '/dev/shm/' 
 number_of_picture = 4
 #textcolor = (120,120,250)
 textcolor = (183,65,14)
