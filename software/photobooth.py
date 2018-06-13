@@ -179,14 +179,17 @@ def my_gpio_callback(channel):
     global button_pressed
     global start_time
 	
-    if (time.time() - start_time) >= 10:
-	    shutdown()
-    else:
-        button_pressed = True
+    level = GPIO.input(channel)
 	
-def my_falling_gpio_callback(channel):
-    global start_time
-    start_time = time.time()
+    if level
+        start_time = time.time()
+    else:
+	    if (time.time() - start_time) >= 10:
+	       shutdown()
+        else:
+           button_pressed = True
+	   
+  
 
 def shutdown():
     subprocess.call("sudo shutdown -h now", shell=True)
@@ -322,8 +325,8 @@ def start_screen():
 cw = 0
 
 
-GPIO.add_event_detect(button, GPIO.RISING, callback=my_gpio_callback, bouncetime=200)
-GPIO.add_event_detect(button, GPIO.FALLING, callback=my_falling_gpio_callback, bouncetime=200)
+GPIO.add_event_detect(button, GPIO.BOTH, callback=my_gpio_callback, bouncetime=200)
+
 
 start_screen()
 counter = 0
