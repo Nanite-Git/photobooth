@@ -58,7 +58,7 @@ void setup()
 
 void flash() {
   for(int i = 0; i<PixelCount; i++) {
-    strip.SetPixelColor(i, RgbwColor(0, 0, 0, 255));
+    strip.SetPixelColor(i, RgbwColor(20, 0, 0, 255));
   }
   strip.Show();
   
