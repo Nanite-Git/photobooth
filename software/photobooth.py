@@ -181,7 +181,11 @@ def my_gpio_callback(channel):
 	
     level = GPIO.input(channel)
 	
+<<<<<<< HEAD
     if level:
+=======
+    if level
+>>>>>>> 9ff7c7ac82b9a0c8c9475ca875a80e77929cab97
         start_time = time.time()
     else:
 	    if (time.time() - start_time) >= 10:
