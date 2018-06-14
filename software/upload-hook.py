@@ -94,6 +94,7 @@ if np < 1:
 if np == 4:
 
     call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", tmp_file])
+    #call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"2460x1846+20+20", "-quality", "75", tmp_file])
     #print "Finished"
 
     if upload_file(tmp_file):

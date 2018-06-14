@@ -58,15 +58,14 @@ void setup()
 
 void flash() {
   for(int i = 0; i<PixelCount; i++) {
-    strip.SetPixelColor(i, RgbwColor(0, 0, 0, 255));
+    strip.SetPixelColor(i, RgbwColor(20, 0, 0, 255));
   }
-  delay(20);
   strip.Show();
   
    for(int i = 0; i<PixelCount; i++) {
     strip.SetPixelColor(i, RgbwColor(0, 0, 0));
   }
-  delay(600);
+  delay(500);
   strip.Show();
 }
 
