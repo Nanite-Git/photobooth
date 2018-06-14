@@ -31,7 +31,7 @@ GPIO.setup(led_button, GPIO.OUT)
 start_time = time.time()
 
 #directory = 'output' 
-directory = '/dev/shm/' 
+directory = '/dev/shm' 
 number_of_picture = 4
 #textcolor = (120,120,250)
 textcolor = (183,65,14)
@@ -261,9 +261,9 @@ def takePhotoSerie():
         subprocess.Popen(hook)
 
     
-    delete_raw_files(files)
 
     pygame.time.wait(15000)
+    delete_raw_files(files)
     GPIO.output(led_button, True)
     start_screen()
 

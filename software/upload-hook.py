@@ -32,13 +32,14 @@ tmp_file = "/dev/shm/" + pic_name
 np = len(sys.argv) -1
 
 
-upload_dir = "documents/" + todays_dir
+upload_dir = "photobooth/" + todays_dir
 
 def get_download_link():
     global upload_dir
     oc = owncloud.Client(server)
     oc.login(username, password)
     try:
+        oc.mkdir("photobooth")
         oc.mkdir(upload_dir)
     except owncloud.HTTPResponseError:
        print "upload_dir already exists"
@@ -47,10 +48,10 @@ def get_download_link():
     if oc.is_shared(upload_dir):
         shares = oc.get_shares(upload_dir)
 		
-    for share in shares:
-        link = share.get_link()
-        if link is not None:
-            share_link = link
+        for share in shares:
+            link = share.get_link()
+            if link is not None:
+                share_link = link
 
 	
     if share_link is None:
