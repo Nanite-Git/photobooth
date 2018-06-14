@@ -76,10 +76,7 @@ def upload_file(filename):
         print 'ERROR: Cannot Upload File'
         return False	
     
-    if success:
-        return True
-    else 
-        return False
+    return success
 
 if np == 0:
     print 'Setup upload hook for today'

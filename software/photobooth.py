@@ -220,7 +220,7 @@ def my_gpio_callback(channel):
     if not level:
         start_time = time.time()
     else:
-	    if (time.time() - start_time) >= 10:
+        if (time.time() - start_time) >= 10:
 	       shutdown()
         else:
            button_pressed = True
