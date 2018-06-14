@@ -85,14 +85,15 @@ def copy_files_to_usb(files):
 
     for f in files:
         try:
-            shutil.copy2(f, usb_dir)
+            #shutil.copy2(f, usb_dir)
+            command = ["cp", str(f), usb_dir]
+            print " ---- " + str(command)
+            subprocess.Popen(command, shell=True)
         except (IOError, os.error) as why:
             print "Error can't copy files"
-            errors.append((srcname, dstname, str(why)))
-            # catch the Error from the recursive copytree so that we can
-            # continue with other files
-        except Error as err:
-            errors.extend(err.args[0])
+            print str(why)
+        except Exception as err:
+            print str(err)
 
 
 
@@ -100,14 +101,16 @@ def copy_files_to_usb(files):
 def delete_raw_files(files):
     for f in files:
         try:
-            os.remove(f)
+            #os.remove(f)
+
+            command = "sleep 300 && rm " + str(f) 
+            print " ---- " + command
+            subprocess.Popen(command, shell=True)
         except (IOError, os.error) as why:
-            print "Error can't copy files"
-            errors.append((srcname, dstname, str(why)))
-            # catch the Error from the recursive copytree so that we can
-            # continue with other files
-        except Error as err:
-            errors.extend(err.args[0])
+            print "Error can't delete files"
+            print str(why)
+        except Exception as err:
+            print str(err)
 
 
 class Background(pygame.sprite.Sprite):
@@ -375,7 +378,7 @@ cw = 0
 start_screen()
 time.sleep(5)
 start_time = time.time()
-GPIO.add_event_detect(button, GPIO.BOTH, callback=my_gpio_callback, bouncetime=200)
+GPIO.add_event_detect(button, GPIO.BOTH, callback=my_gpio_callback, bouncetime=100)
 
 
 start_screen()
