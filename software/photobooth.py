@@ -88,7 +88,7 @@ def copy_files_to_usb(files):
             #shutil.copy2(f, usb_dir)
             command = ["cp", str(f), usb_dir]
             print " ---- " + str(command)
-            subprocess.Popen(command, shell=True)
+            subprocess.Popen(command)
         except (IOError, os.error) as why:
             print "Error can't copy files"
             print str(why)
