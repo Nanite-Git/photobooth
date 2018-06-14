@@ -4,6 +4,7 @@ import sys
 import cups
 import time
 import os
+from datetime import datetime
 from nextcloud_account import server, username, password
 
 # pip install qrcode[pil]
@@ -15,8 +16,15 @@ import owncloud
 
 from subprocess import call
 
-todays_dir = time.strftime("%Y-%m-%d")
-pic_name = time.strftime("%Y-%m-%d_%H-%M-%S.jpg")
+n = datetime.now()
+folder_date = n
+if folder_date.hour < 6:
+    folder_date = datetime.today() - timedelta(days=1)
+
+
+
+todays_dir = folder_date.strftime("%Y-%m-%d")
+pic_name = n.strftime("%Y-%m-%d_%H-%M-%S.jpg")
 
 output_file = "./photo-ouput/" + todays_dir + "/" + pic_name 
 tmp_file = "/dev/shm/" + pic_name
@@ -24,7 +32,7 @@ tmp_file = "/dev/shm/" + pic_name
 np = len(sys.argv) -1
 
 
-upload_dir = time.strftime("%Y-%m-%d")
+upload_dir = "documents/" + todays_dir
 
 def get_download_link():
     global upload_dir
@@ -82,11 +90,6 @@ if np == 0:
     print 'Setup upload hook for today'
     get_download_link()
 	
-
-if np < 1:
-    print 'Not enough arguments'
-    quit()
-
 
 if np == 4:
 
