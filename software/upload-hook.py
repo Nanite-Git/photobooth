@@ -71,7 +71,7 @@ def upload_file(filename):
 
     success = False
     try:
-        sucsess = oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
+        success = oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
     except owncloud.HTTPResponseError:
         print 'ERROR: Cannot Upload File'
         return False	
