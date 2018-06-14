@@ -53,7 +53,7 @@ def get_download_link():
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=10,
-	border=4,
+	    border=4,
 	)
 	
     qr.add_data(share_link)
@@ -68,13 +68,18 @@ def get_download_link():
 def upload_file(filename):
     global upload_dir
     oc = get_download_link()
+
+    success = False
     try:
-        oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
+        sucsess = oc.put_file(upload_dir + "/" + os.path.basename(filename), filename)
     except owncloud.HTTPResponseError:
         print 'ERROR: Cannot Upload File'
         return False	
     
-    return True
+    if success:
+        return True
+    else 
+        return False
 
 if np == 0:
     print 'Setup upload hook for today'
@@ -88,10 +93,6 @@ if np < 1:
 
 if np == 4:
 
-    #print sys.argv
-
-    #call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1824x1232+20+20", "tile_4.jpg"])
-    #call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", "tile_4.jpg"])
     call(["montage", sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], "-tile", "2x2", "-geometry" ,"1804x1232+20+20", tmp_file])
     #print "Finished"
 
