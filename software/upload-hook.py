@@ -98,10 +98,6 @@ if np == 4:
     #print "Finished"
 
     if upload_file(tmp_file):
-        os.remove(sys.argv[1])
-        os.remove(sys.argv[2])
-        os.remove(sys.argv[3])
-        os.remove(sys.argv[4])
         os.remove(tmp_file)
     else:
         if not os.path.exists(os.path.dirname(output_file)):

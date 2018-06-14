@@ -12,7 +12,7 @@ import sys, getopt
 import subprocess
 import RPi.GPIO as GPIO
 import serial
-
+import shutil
 
 
 
@@ -67,13 +67,47 @@ except OSError as e:
                     raise
 
 def check_usb():
-    global directory
     usb_dir = usb_mount + "/photobooth/output/"
     if os.path.ismount(usb_mount):
         if not os.path.exists(usb_dir):
             os.makedirs(usb_dir)
 
-        directory = usb_dir
+        if os.access(usb_dir, os.W_OK):
+            return True
+
+    return False        
+        
+    
+    
+
+def copy_files_to_usb(files):
+    usb_dir = usb_mount + "/photobooth/output/"
+
+    for f in files:
+        try:
+            shutil.copy2(f, usb_dir)
+        except (IOError, os.error) as why:
+            print "Error can't copy files"
+            errors.append((srcname, dstname, str(why)))
+            # catch the Error from the recursive copytree so that we can
+            # continue with other files
+        except Error as err:
+            errors.extend(err.args[0])
+
+
+
+
+def delete_raw_files(files):
+    for f in files:
+        try:
+            os.remove(f)
+        except (IOError, os.error) as why:
+            print "Error can't copy files"
+            errors.append((srcname, dstname, str(why)))
+            # catch the Error from the recursive copytree so that we can
+            # continue with other files
+        except Error as err:
+            errors.extend(err.args[0])
 
 
 class Background(pygame.sprite.Sprite):
@@ -186,7 +220,7 @@ def my_gpio_callback(channel):
     if not level:
         start_time = time.time()
     else:
-	if (time.time() - start_time) >= 10:
+	    if (time.time() - start_time) >= 10:
 	       shutdown()
         else:
            button_pressed = True
@@ -210,6 +244,13 @@ def takePhotoSerie():
     
     thank_you()
 
+    files = []
+    for i in range(number_of_picture):
+        files.append(str(getFilename(fileprefix, i)))
+
+    if check_usb():
+        copy_files_to_usb(files)
+
     if print_enabled:
         # Start printing
         # build hook call list
@@ -218,6 +259,9 @@ def takePhotoSerie():
         for i in range(number_of_picture):
             hook.append(str(getFilename(fileprefix, i)))
         subprocess.Popen(hook)
+
+    
+    delete_raw_files(files)
 
     pygame.time.wait(15000)
     GPIO.output(led_button, True)
@@ -336,8 +380,6 @@ GPIO.add_event_detect(button, GPIO.BOTH, callback=my_gpio_callback, bouncetime=2
 
 start_screen()
 counter = 0
-
-check_usb()
 
 idle_time = datetime.datetime.now()
 
