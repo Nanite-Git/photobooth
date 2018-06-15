@@ -40,6 +40,10 @@ def get_download_link():
     oc.login(username, password)
     try:
         oc.mkdir("photobooth")
+    except owncloud.HTTPResponseError:
+       print "upload_dir already exists"
+    
+    try:
         oc.mkdir(upload_dir)
     except owncloud.HTTPResponseError:
        print "upload_dir already exists"
