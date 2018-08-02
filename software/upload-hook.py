@@ -32,7 +32,7 @@ tmp_file = "/dev/shm/" + pic_name
 np = len(sys.argv) -1
 
 
-upload_dir = "photobooth/" + todays_dir
+upload_dir = "photobooth/ " + todays_dir
 
 def get_download_link():
     global upload_dir
@@ -42,7 +42,7 @@ def get_download_link():
         oc.mkdir("photobooth")
     except owncloud.HTTPResponseError:
        print "upload_dir already exists"
-    
+
     try:
         oc.mkdir(upload_dir)
     except owncloud.HTTPResponseError:

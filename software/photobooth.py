@@ -34,7 +34,8 @@ start_time = time.time()
 directory = '/dev/shm' 
 number_of_picture = 4
 #textcolor = (120,120,250)
-textcolor = (183,65,14)
+#textcolor = (183,65,14) # Race Background
+textcolor = (140,10,10)
 shadowcolor = (30,30,30)
 font = 'Droid Sans Mono'
 
@@ -189,7 +190,8 @@ screen = pygame.display.set_mode((dispx,dispy), pygame.FULLSCREEN)
 #BackGround = Background('gray-slate-background.jpg', [0,0])
 #BackGround = Background('background1.jpg', [0,0])
 #BackGround = Background('background2.png', [0,0])
-BackGround = Background('background-race.jpg', [0,0])
+BackGround = Background('gras.jpg', [0,0])
+#BackGround = Background('background-race.jpg', [0,0])
 
 screen.fill([255, 255, 255])
 screen.blit(BackGround.image, BackGround.rect)
@@ -350,6 +352,17 @@ def thank_you():
     screen.blit(t, (int(((dispx-pic_preview_width)/2)-(t.get_size()[0]/2)), 200))
     t = textDropShadow(bigfont, 'you', 20, textcolor, shadowcolor)
     screen.blit(t, (int(((dispx-pic_preview_width)/2)-(t.get_size()[0]/2)), 450))
+
+    t = textDropShadow(tinyfont, 'it might take one or two minutes', 3, textcolor, shadowcolor)
+    x = int(dispx - pic_preview_width - 20 - t.get_size()[0])
+    y = int(dispy - (t.get_size()[1] * 3))  
+    screen.blit(t, (x, y))
+   
+    t = textDropShadow(tinyfont, 'to get the photos ready ...', 3, textcolor, shadowcolor)
+    x = int(dispx - pic_preview_width - 20 - t.get_size()[0])
+    y = int(dispy - (t.get_size()[1] * 2))  
+    screen.blit(t, (x, y))
+    
     showPictures()
     pygame.display.update()
 
@@ -361,7 +374,17 @@ def start_screen():
     screen.blit(t, (int((dispx/2)-(t.get_size()[0]/2)), int((dispy/2)-(t.get_size()[1])-75)))
     t = textDropShadow(smallfont, 'to start', 10, textcolor, shadowcolor)
     screen.blit(t, (int((dispx/2)-(t.get_size()[0]/2)), int((dispy/2)-(t.get_size()[1])+75)))
+    
+    t = textDropShadow(tinyfont, 'Four pictures are taken', 5, textcolor, shadowcolor)
+    x = int(dispx - 20 - t.get_size()[0])
+    y = int(dispy - (t.get_size()[1]*3) )  
+    screen.blit(t, (x, y))
 	
+    t = textDropShadow(tinyfont, 'with a delay of 10 seconds', 5, textcolor, shadowcolor)
+    x = int(dispx - 20 - t.get_size()[0])
+    y = int(dispy - (t.get_size()[1] * 2))  
+    screen.blit(t, (x, y))
+
     try:
         img = pygame.image.load('/dev/shm/qr.png')
         screen.blit(img,(80,dispy-(80+370)))
